@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>PLC Tag To JSON via a JSONP callback - Example</title>
+</head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  
+  .neutral {
+    background: linear-gradient(#49708f, grey);
+    padding: 2px; 
+    color: white; 
+    display: inline-block;
+    text-transform: uppercase;
+  }
+
+  .green {
+  background-color: green;
+  padding: 2px; 
+    color: white; 
+    display: inline-block;
+    text-transform: uppercase;
+}
+
+.red {
+  background-color: red;
+  padding: 2px; 
+    color: white; 
+    display: inline-block;
+    text-transform: uppercase;
+}
+
+.text {
+  text-transform: uppercase;
+  
+}
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .column {
+    flex: 1;
+    padding: 10px;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  td {
+    vertical-align: top;
+  }
+</style>
+
+<body>
+  <!-- The output appears here -->
+  <div id="artistList"></div>
+  <script>
+    function f_color(data) {
+  for (var i in data.Devices) {
+    if (data.Devices[i].State === 'Ready') {
+      data.Devices[i].StateClass = 'green';
+    } 
+    else if (data.Devices[i].State === 'OPEN' || data.Devices[i].State === 'CLOSED') {
+      data.Devices[i].StateClass = 'neutral'
+
+    }
+    else {
+      data.Devices[i].StateClass = 'red';
+    }
+  }
+  return data;
+}
+
+    function updateGraphicSensor(data) {
+      var output1 = "" + "<table> <tr> <th> Sensors </th> </tr>"; // Initialize the output
+      // Loop through the artists, and add them as list items under the sensors table
+      for (var i in data.Devices)
+        if (
+          data.Devices[i].Label === "Temperature Sensor" ||
+          data.Devices[i].Label === "Level Sensor" ||
+          data.Devices[i].Label === "Flow Sensor" ||
+          data.Devices[i].Label === "Pressure Sensor"
+        ) {
+          // change the color of text depending on state value
+          var stateColor = data.Devices[i].StateClass === 'green' ? 'green' :data.Devices[i].StateClass ==='neutral' ? 'neutral': 'red';
+          output1 +=
+            "<div class = 'text'><tr><td>" +
+            data.Devices[i].Label +
+            ": " +
+            data.Devices[i].Value +
+            " " +
+            data.Devices[i].Units +
+            " State:<div class =" + stateColor + " >" +
+            data.Devices[i].State +
+            "</div></div></td></tr>";
+        }
+      output1 += "</table>";
+      // Output the data to the "artistList" element
+      return output1;
+    }
+
+    function updateGraphicCartridge(data) {
+      var output2 = "" + "<table> <tr> <th> Cartridges </th> </tr>"; // Initialize the output
+      // Loop through the artists, and add them as list items
+      for (var i in data.Devices)
+        if (data.Devices[i].Label === "Electramet M Cartrdige") {
+          var stateColor = data.Devices[i].StateClass === 'green' ? 'green' :data.Devices[i].StateClass ==='neutral' ? 'neutral': 'red';
+          output2 +=
+            "<div class = 'text'><tr><td>" +
+            data.Devices[i].Label +
+            ": " +
+            data.Devices[i].Value +
+            " " +
+            data.Devices[i].Units +
+            " State:<div class = 'State " + stateColor + "'>" +
+            data.Devices[i].State +
+            "</div></div></td></tr>";
+        }
+      output2 += "</table>";
+      // Output the data to the "artistList" element
+      return output2;
+    }
+
+    function updateGraphicValves(data) {
+      var output3 = "" + "<table> <tr> <th> Tanks </th> </tr>"; // Initialize the output
+      // Loop through the artists, and add them as list items
+      for (var i in data.Devices)
+        if (
+          data.Devices[i].Label === "FEED" ||
+          data.Devices[i].Label === "PRODUCT" ||
+          data.Devices[i].Label === "Evac to Feed" ||
+          data.Devices[i].Label === "Regen" ||
+          data.Devices[i].Label === "Regen Return" ||
+          data.Devices[i].Label === "Evac to Regen" ||
+          data.Devices[i].Label === "Recirc" ||
+          data.Devices[i].Label === "Vacuum Breaker" ||
+          data.Devices[i].Label === "FEED TANK 1" ||
+          data.Devices[i].Label === "FEED TANK 2" ||
+          data.Devices[i].Label === "REGEN TANK" ||
+          data.Devices[i].Label === "PEROXIDE DRUM"
+        ) {
+          var stateColor = data.Devices[i].StateClass === 'green' ? 'green' :data.Devices[i].StateClass ==='neutral' ? 'neutral': 'red';
+          output3 +=
+            "<div class = 'text'><tr><td>" +
+            data.Devices[i].Label +
+            ": " +
+            data.Devices[i].Value +
+            " " +
+            data.Devices[i].Units +
+            " State:<div class =" + stateColor + " >" +
+            data.Devices[i].State +
+            "</div></div></td></tr>";
+        }
+      output3 += "</table>";
+      // Output the data to the "artistList" element
+      return output3;
+    }
+
+    function updateGraphicElse(data) {
+      var output4 = "" + "<table> <tr> <th> Pumps </th> </tr>"; // Initialize the output
+      // Loop through the artists, and add them as list items
+      for (i in data.Devices)
+        if (
+          data.Devices[i].Label === "Feed Pump" ||
+          data.Devices[i].Label === "Evac Pump" ||
+          data.Devices[i].Label === "Regen Pump" ||
+          data.Devices[i].Label === "Pump" ||
+          data.Devices[i].Label === "Feed Pump Pressure Drop"
+        ) {
+          var stateColor = data.Devices[i].StateClass === 'green' ? 'green' :data.Devices[i].StateClass ==='neutral' ? 'neutral': 'red';
+          output4 +=
+            "<div class = 'text'><tr><td>" +
+            data.Devices[i].Label +
+            ": " +
+            data.Devices[i].Value +
+            " " +
+            
+            data.Devices[i].Units +
+            " State:<div class =" + stateColor + " >" +
+            data.Devices[i].State +
+            "</div></div></td></tr>";
+        }
+      output4 += "</table>";
+      // Output the data to the "artistList" element
+      return output4;
+    }
+    function updateGraphic(data) {
+      output1 = updateGraphicCartridge(data);
+      output2 = updateGraphicSensor(data);
+      output3 = updateGraphicValves(data);
+      output4 = updateGraphicElse(data);
+      var output = "<table><tr><td>" + output1 + "</td><td>" + output2 + "</td><td>" + output3 + "</td><td>" + output4 + "</td></tr></table>";
+      document.getElementById("artistList").innerHTML = output;
+    }
+
+    function parseResponse(jsonData) {
+      var updatedData = f_color(jsonData); // Call f_color() to update the colors
+      updateGraphic(updatedData);
+    }
+
+    function fetchData() {
+      var scriptElement = document.createElement("script");
+      var scriptElement2 = document.createElement("mySavedModel");
+      scriptElement.src = "http://172.16.1.101/Tags_To_JSON.cgi?Type=0&Idx=0&SubIdx=0&callback=parseResponse";
+
+      // Remove any existing script elements
+      var existingScript = document.getElementById("dataScript");
+      if (existingScript) {
+        existingScript.remove();
+      }
+
+      scriptElement.id = "dataScript";
+      document.body.appendChild(scriptElement);
+    }
+
+    // Call the fetchData function initially
+    fetchData();
+
+    // Set interval to fetch data every second
+
+    setInterval(fetchData, 3000);
+  </script>
+</body>
+
+</html>
